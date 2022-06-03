@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import './App.css';
 import db from "./firebase";
-import { addDoc, collection, onSnapshot, } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, setDoc, serverTimestamp, updateDoc, doc } from "firebase/firestore";
 import { FormControl, Table, TextField, Button, TableBody, TableRow, TableContainer, TableCell, TableHead, Paper } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 
@@ -41,6 +41,7 @@ function App() {
     })
   }, []);
 
+  // firestore にデータを追加
   const newPlant = ()=>{
     addDoc(plantData,{
       name: inputName,
@@ -48,6 +49,14 @@ function App() {
       lastDay: new Date(inputLastDay),
     });
     setInputName("");
+  }
+
+  // 最終水やり日の更新
+  const updateLastDay = (id)=>{
+    const docRef = doc(db, "plants", id)
+    updateDoc(docRef,{
+      lastDay: serverTimestamp()
+    })
   }
 
   return (
@@ -90,6 +99,7 @@ function App() {
               <TableCell>水やり間隔</TableCell>
               <TableCell>最後に水をあげた日</TableCell>
               <TableCell>次にあげる日</TableCell>
+              <TableCell></TableCell>
             </TableHead>
             <TableBody>
               {plants.map((plant) => (
@@ -98,6 +108,9 @@ function App() {
                   <TableCell>{plant.interval} 日</TableCell>
                   <TableCell>{plant.lastDay}</TableCell>
                   <TableCell>{dayjs(plant.lastDay).add(plant.interval,'d').format('YYYY/MM/DD')} </TableCell>
+                  <TableCell>
+                    <Button color="primary" variant="contained" onClick={() => updateLastDay(plant.id)} >水やり</Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
