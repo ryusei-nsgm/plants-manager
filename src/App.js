@@ -2,14 +2,31 @@ import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import './App.css';
 import db from "./firebase";
-import { collection, onSnapshot, } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, } from "firebase/firestore";
+import { FormControl, Table, TextField, Button, TableBody, TableRow, TableContainer, TableCell, TableHead, Paper } from '@material-ui/core';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => createStyles({
+  table: {
+      minWidth: 650,
+    },
+  tableHead: {
+      backgroundColor: "#90ee90",
+  },
+}));
 
 function App() {
+  //定義したスタイルを利用するための設定
+  const classes = useStyles();
+
   const [plants, setPlants] = useState([]);
+  const [inputName, setInputName] = useState("");
+  const [inputInterval, setInputInterval] = useState();
+  const [inputLastDay, setInputLastDay] = useState();
   
+  const plantData = collection(db, "plants");
   useEffect(() => {
     // firestoreからデータ取得
-    const plantData = collection(db, "plants");
     // getDocs(plantData).then((snapShot) => {
     //   setPlants(snapShot.docs.map((doc) => ({ ...doc.data() })))
     // });
@@ -22,18 +39,70 @@ function App() {
       }));
       setPlants(data);
     })
-  }, [])
+  }, []);
+
+  const newPlant = ()=>{
+    addDoc(plantData,{
+      name: inputName,
+      interval: inputInterval,
+      lastDay: new Date(inputLastDay),
+    });
+    setInputName("");
+  }
 
   return (
     <div className="App">
       <div>
-        {plants.map((plant) => (
-          <div key={plant.name}>
-            <h1>{plant.name}</h1>
-            <p>水やり間隔 {plant.interval} 日</p>
-            <p>{plant.lastDay}</p>
-          </div>
-        ))}
+        <FormControl>
+          <TextField
+            InputLabelProps={{
+              shrink:true,
+            }}
+            label="名前"
+            value={inputName}
+            onChange={(e)=>setInputName(e.target.value)}
+          />
+          <TextField
+            InputLabelProps={{
+              shrink:true,
+            }}
+            inputProps={{ pattern: "^[0-9]+$" }}
+            label="水やり間隔(日数)"
+            type="number"
+            onChange={(e)=>setInputInterval(e.target.value)}
+          />
+          <TextField
+            InputLabelProps={{
+              shrink:true,
+            }}
+            label="最後に水をあげた日"
+            type="date"
+            onChange={(e)=>setInputLastDay(e.target.value)}
+          />
+        <Button color="primary" variant="contained" onClick={() => newPlant(inputName, inputInterval, inputLastDay)} >追加</Button>
+        </FormControl>
+      </div>
+      <div>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead  className={classes.tableHead}>
+              <TableCell>名前</TableCell>
+              <TableCell>水やり間隔</TableCell>
+              <TableCell>最後に水をあげた日</TableCell>
+              <TableCell>次にあげる日</TableCell>
+            </TableHead>
+            <TableBody>
+              {plants.map((plant) => (
+                <TableRow key={plant.name}>
+                  <TableCell>{plant.name}</TableCell>
+                  <TableCell>{plant.interval} 日</TableCell>
+                  <TableCell>{plant.lastDay}</TableCell>
+                  <TableCell>{dayjs(plant.lastDay).add(plant.interval,'d').format('YYYY/MM/DD')} </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
     </div>
   );
