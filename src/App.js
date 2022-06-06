@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import './App.css';
 import db from "./firebase";
-import { addDoc, collection, onSnapshot, setDoc, serverTimestamp, updateDoc, doc } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, setDoc, serverTimestamp, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { FormControl, Table, TextField, Button, TableBody, TableRow, TableContainer, TableCell, TableHead, Paper } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { findByLabelText } from '@testing-library/react';
 
 const useStyles = makeStyles((theme) => createStyles({
   table: {
-      minWidth: 650,
-    },
+    marginTop: 20,
+    minWidth: 650,
+  },
   tableHead: {
-      backgroundColor: "#90ee90",
+    backgroundColor: "#90ee90",
   },
 }));
 
@@ -48,7 +50,9 @@ function App() {
       interval: inputInterval,
       lastDay: new Date(inputLastDay),
     });
-    setInputName("");
+    setInputName('');
+    setInputInterval('');
+    setInputLastDay('');
   }
 
   // 最終水やり日の更新
@@ -59,9 +63,14 @@ function App() {
     })
   }
 
+  // 植物のデータ削除
+  const deletePlant = (id)=>{
+    deleteDoc(doc(db, "plants", id));
+  }
+
   return (
     <div className="App">
-      <div>
+      <div className={classes.form}>
         <FormControl>
           <TextField
             InputLabelProps={{
@@ -88,7 +97,7 @@ function App() {
             type="date"
             onChange={(e)=>setInputLastDay(e.target.value)}
           />
-        <Button color="primary" variant="contained" onClick={() => newPlant(inputName, inputInterval, inputLastDay)} >追加</Button>
+        <Button color="success" variant="contained" onClick={() => newPlant(inputName, inputInterval, inputLastDay)} >追加</Button>
         </FormControl>
       </div>
       <div>
@@ -100,6 +109,7 @@ function App() {
               <TableCell>最後に水をあげた日</TableCell>
               <TableCell>次にあげる日</TableCell>
               <TableCell></TableCell>
+              <TableCell></TableCell>
             </TableHead>
             <TableBody>
               {plants.map((plant) => (
@@ -110,6 +120,9 @@ function App() {
                   <TableCell>{dayjs(plant.lastDay).add(plant.interval,'d').format('YYYY/MM/DD')} </TableCell>
                   <TableCell>
                     <Button color="primary" variant="contained" onClick={() => updateLastDay(plant.id)} >水やり</Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button color="secondary" variant="contained" onClick={() => deletePlant(plant.id)} >削除</Button>
                   </TableCell>
                 </TableRow>
               ))}
