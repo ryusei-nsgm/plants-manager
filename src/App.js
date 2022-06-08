@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import './App.css';
-import db from "./firebase";
+import {db, auth} from "./firebase";
+import SignUp from './components/SignUp';
 import { addDoc, collection, onSnapshot, serverTimestamp, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { FormControl, Table, TextField, Button, TableBody, TableRow, TableContainer, TableCell, TableHead, Paper } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
@@ -68,7 +69,11 @@ function App() {
   }
 
   return (
+
     <div className="App">
+      <div className='login'>
+        <SignUp />
+      </div>
       <div className={classes.form}>
         <FormControl>
           <TextField
