@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import './App.css';
 import db from "./firebase";
-import { addDoc, collection, onSnapshot, setDoc, serverTimestamp, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, serverTimestamp, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { FormControl, Table, TextField, Button, TableBody, TableRow, TableContainer, TableCell, TableHead, Paper } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { findByLabelText } from '@testing-library/react';
 
 const useStyles = makeStyles((theme) => createStyles({
   table: {
@@ -97,7 +96,7 @@ function App() {
             type="date"
             onChange={(e)=>setInputLastDay(e.target.value)}
           />
-        <Button color="success" variant="contained" onClick={() => newPlant(inputName, inputInterval, inputLastDay)} >追加</Button>
+        <Button color="default" variant="contained" onClick={() => newPlant(inputName, inputInterval, inputLastDay)} >追加</Button>
         </FormControl>
       </div>
       <div>
