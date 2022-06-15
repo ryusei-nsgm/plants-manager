@@ -85,7 +85,7 @@ function Home() {
   } else {
     return (
       <div className="Home">
-        <div className='loginBar'>
+        <div className='logoutBar'>
           <button onClick={handleLogout}>ログアウト</button>
         </div>
         <div className={classes.form}>
