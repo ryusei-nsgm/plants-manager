@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => createStyles({
 }));
 
 function Home() {
-  //定義したスタイルを利用するための設定
   const classes = useStyles();
 
   const [plants, setPlants] = useState([]);
@@ -32,10 +31,6 @@ function Home() {
   
   const plantData = collection(db, "plants");
   useEffect(() => {
-    // firestoreからデータ取得
-    // getDocs(plantData).then((snapShot) => {
-    //   setPlants(snapShot.docs.map((doc) => ({ ...doc.data() })))
-    // });
     onSnapshot(plantData, (QuerySnapshot) => {
       const data = QuerySnapshot.docs.map((doc) => ({
         id: doc.id,
