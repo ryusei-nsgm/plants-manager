@@ -110,7 +110,7 @@ function Home() {
               type="date"
               onChange={(e)=>setInputLastDay(e.target.value)}
             />
-          <Button color="default" variant="contained" onClick={() => newPlant(inputName, inputInterval, inputLastDay)} >追加</Button>
+          <Button color="default" variant="contained" onClick={() => newPlant()} >追加</Button>
           </FormControl>
         </div>
         <div>
